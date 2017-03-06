@@ -1,3 +1,7 @@
-#!/usr/bin/env bash
-var=`cat;echo; echo '$stdin = $stdin.reopen "/dev/tty";'`
-printf "${var}" | pry
+#!/usr/bin/env ruby
+
+if $stdin.tty?
+  puts "Some argument crunching..."
+else
+  exec %{script=`cat;echo; echo '$stdin = $stdin.reopen "/dev/tty";'`; printf "${script}" | pry}
+end
