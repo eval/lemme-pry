@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{try a gem or script}
   spec.description   = %q{try a gem or script}
-  spec.homepage      = "http://gitlab.com/eval/pry-try"
+  spec.homepage      = "https://gitlab.com/eval/pry-try/tree/master#pry-try"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
