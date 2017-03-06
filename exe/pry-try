@@ -3,5 +3,5 @@
 if $stdin.tty?
   puts "Some argument crunching..."
 else
-  exec %{script=`cat;echo; echo '$stdin = $stdin.reopen "/dev/tty";'`; printf "${script}" | pry}
+  exec %{script=$(cat;echo; echo '$stdin = $stdin.reopen "/dev/tty";'); printf "${script}" | pry}
 end
