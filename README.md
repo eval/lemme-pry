@@ -6,7 +6,7 @@
 
 This gem should support the following usecases:
 
-### pipe-in a script
+### pipe-in a script (works)
 
 ```bash
 # piped-in content is evaluated after which a repl opens:
@@ -18,7 +18,7 @@ $ echo '@a = 1' | pry-try
 $ curl <path-to-raw-gist> | pry-try
 ```
 
-### try a gem
+### try a gem (WIP)
 
 ```bash
 $ pry-try activesupport
@@ -37,7 +37,7 @@ Using activesupport 5.0.2
 => 1 second
 ```
 
-### try a gem within a pry-session
+### try a gem within a pry-session (WIP)
 
 ```bash
 # given 
