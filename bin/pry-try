@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+var=`cat;echo; echo '$stdin = $stdin.reopen "/dev/tty";'`
+printf "${var}" | pry
