@@ -1,7 +1,35 @@
 #!/usr/bin/env ruby
 
+VERSION_LIKE_RE = [Gem::Requirement::PATTERN, /v?\d+\.\d+/, /^\h+$/].freeze
+
+def parse_args(args)
+  args.each_with_object([]) do |arg, obj|
+    matches_arg = arg.method(:match).to_proc
+    if VERSION_LIKE_RE.detect(&matches_arg)
+      obj[-1] << arg
+    else
+      obj << [arg]
+    end
+  end
+end
+
 if $stdin.tty?
   puts "Some argument crunching..."
+  require 'tempfile'
+  require 'yaml'
+  script = Tempfile.new.tap do |f|
+    File.write(f, <<CODEZ.gsub(/\n+ *(?=\S)/, ';'))
+require 'bundler/inline'
+
+gemfile do
+  source 'https://rubygems.org'
+  gem 'pry'
+  YAML.load(#{YAML.dump(parse_args(ARGV)).inspect}).each {|gargs| gem(*gargs) }
+end
+$stdin = $stdin.reopen '/dev/tty';
+CODEZ
+  end
+  exec %{cat #{script.path} | pry}
 else
   exec %{script=$(cat;echo; echo '$stdin = $stdin.reopen "/dev/tty";'); printf "${script}" | pry}
 end
