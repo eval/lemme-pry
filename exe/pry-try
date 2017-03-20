@@ -13,8 +13,21 @@ def parse_args(args)
   end
 end
 
+REQUIREMENTS = {
+  'rails' => %w(rails/all active_support/all),
+  'activerecord' => %w(active_record),
+  'activesupport' => %w(active_support/all),
+}.freeze
+
+gems = parse_args(ARGV).map do |gem|
+  if r = REQUIREMENTS[gem.first]
+    gem << {:require => r}
+  else
+    gem
+  end
+end
+
 if $stdin.tty?
-  puts "Some argument crunching..."
   require 'tempfile'
   require 'yaml'
   script = Tempfile.new.tap do |f|
@@ -24,7 +37,7 @@ require 'bundler/inline'
 gemfile do
   source 'https://rubygems.org'
   gem 'pry'
-  YAML.load(#{YAML.dump(parse_args(ARGV)).inspect}).each {|gargs| gem(*gargs) }
+  YAML.load(#{YAML.dump(gems).inspect}).each {|gargs| gem(*gargs) }
 end
 $stdin = $stdin.reopen '/dev/tty';
 CODEZ
