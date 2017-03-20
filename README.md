@@ -46,6 +46,8 @@ Using activesupport 5.0.2
 Request a specific version, like you would do in a Gemfile:
 ```bash
 $ pry-try activesupport '~>4.2'
+# or multiple gems:
+$ pry-try activesupport '~>4.2' redis
 ```
 
 ### try a gem within a pry-session
