@@ -34,7 +34,7 @@ if $stdin.tty?
     File.write(f, <<CODEZ.gsub(/\n+ *(?=\S)/, ';'))
 require 'bundler/inline'
 
-gemfile do
+gemfile(true) do
   source 'https://rubygems.org'
   gem 'pry'
   YAML.load(#{YAML.dump(gems).inspect}).each {|gargs| gem(*gargs) }
