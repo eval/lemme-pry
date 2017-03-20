@@ -1,6 +1,6 @@
 # pry-try
 
-Open a pry-session with the gems you want to try.  
+Start a pry-session with specific gems or a (remote) script loaded.
 
 ## Usage
 
@@ -68,14 +68,14 @@ Open a pry-session with the gems you want to try.
     $ gist -r 76955c57512c1e4ac01cdd913b76c92d | pry-try
     ```
     
-    **NOTE:** curl-pipe-runtime is [not without risk](https://www.idontplaydarts.com/2016/04/detecting-curl-pipe-bash-server-side/). [vipe](https://github.com/madx/moreutils/blob/master/vipe) ([npm variant](https://github.com/juliangruber/vipe#vipe)) is highly recommended to first view the code that is about to be executed.
+    **NOTE:** curl-pipe-runtime is [not without risk](https://www.idontplaydarts.com/2016/04/detecting-curl-pipe-bash-server-side/). A tool like [vipe](https://github.com/madx/moreutils/blob/master/vipe) ([npm variant](https://github.com/juliangruber/vipe#vipe)) allows you to inspect the fetched script before handing it over to pry-try.
 
 
 ## Installation
 
 Install system-wide:
 
-    $ gem install prytry
+    $ gem install pry-try
 
 
 ## Development
