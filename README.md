@@ -62,8 +62,14 @@ Open a pry-session with the gems you want to try.
     [2] pry(main)> 
     
     # handy when sharing code with others:
-    $ curl <url-of-raw-gist> | pry-try
+    $ curl https://gist.githubusercontent.com/eval/76955c57512c1e4ac01cdd913b76c92d/raw/bf714a15789eca3e968c3544f85b9b786b8eae8f/hello.rb | pry-try
+    
+    # or via the gist command:
+    $ gist -r 76955c57512c1e4ac01cdd913b76c92d | pry-try
     ```
+    
+    **NOTE:** curl-pipe-runtime is [not without risk](https://www.idontplaydarts.com/2016/04/detecting-curl-pipe-bash-server-side/). [vipe](https://github.com/madx/moreutils/blob/master/vipe) ([npm variant](https://github.com/juliangruber/vipe#vipe)) is highly recommended to first view the code that is about to be executed.
+
 
 ## Installation
 
