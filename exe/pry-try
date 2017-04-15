@@ -33,6 +33,7 @@ if @gems.any?
   @script = Tempfile.new.tap do |f|
     File.write(f, <<CODEZ.gsub(/\n+ *(?=\S)/, ';'))
 require 'bundler/inline'
+require 'yaml'
 
 gemfile(true) do
   source 'https://rubygems.org'
@@ -43,4 +44,4 @@ CODEZ
   end
 end
 
- exec %{script=$(cat #{@script ? @script.path : ''} #{$stdin.tty? ? '' : '-'}; echo;echo '$stdin = $stdin.reopen "/dev/tty";'); printf "${script}" | pry}
+ exec %{unset BUNDLE_BIN;script=$(cat #{@script ? @script.path : ''} #{$stdin.tty? ? '' : '-'}; echo;echo '$stdin = $stdin.reopen "/dev/tty";'); printf "${script}" | pry}
