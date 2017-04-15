@@ -19,7 +19,7 @@ REQUIREMENTS = {
   'activesupport' => %w(active_support/all),
 }.freeze
 
-gems = parse_args(ARGV).map do |gem|
+@gems = parse_args(ARGV).map do |gem|
   if r = REQUIREMENTS[gem.first]
     gem << {:require => r}
   else
@@ -27,22 +27,20 @@ gems = parse_args(ARGV).map do |gem|
   end
 end
 
-if $stdin.tty?
+if @gems.any?
   require 'tempfile'
   require 'yaml'
-  script = Tempfile.new.tap do |f|
+  @script = Tempfile.new.tap do |f|
     File.write(f, <<CODEZ.gsub(/\n+ *(?=\S)/, ';'))
 require 'bundler/inline'
 
 gemfile(true) do
   source 'https://rubygems.org'
   gem 'pry'
-  YAML.load(#{YAML.dump(gems).inspect}).each {|gargs| gem(*gargs) }
-end
-$stdin = $stdin.reopen '/dev/tty';
+  YAML.load(#{YAML.dump(@gems).inspect}).each {|gargs| gem(*gargs) }
+end;nil
 CODEZ
   end
-  exec %{cat #{script.path} | pry}
-else
-  exec %{script=$(cat;echo; echo '$stdin = $stdin.reopen "/dev/tty";'); printf "${script}" | pry}
 end
+
+ exec %{script=$(cat #{@script ? @script.path : ''} #{$stdin.tty? ? '' : '-'}; echo;echo '$stdin = $stdin.reopen "/dev/tty";'); printf "${script}" | pry}
