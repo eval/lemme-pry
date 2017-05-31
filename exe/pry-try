@@ -69,18 +69,34 @@ end
 if @gems.any?
   require 'tempfile'
   require 'yaml'
-  @script = Tempfile.new('pry-try').tap do |f|
-    File.write(f, <<CODEZ.gsub(/\n+ *(?=\S)/, ';'))
+  require 'erb'
+
+  puts ERB.new(<<-GEMFILE, 1, "-").result
 require 'bundler/inline'
-require 'yaml'
 
 gemfile(true) do
   source 'https://rubygems.org'
   gem 'pry'
-  YAML.load(#{YAML.dump(@gems).inspect}).each {|gargs| gem(*gargs) }
-end;nil
-CODEZ
-  end
+<% @gems.each do |(gem, *opts)|
+    options = opts.last.is_a?(Hash) ? opts.pop : {}
+    version = opts.pop -%>
+  gem <%= gem.inspect %><% if version  %>, <%= version.inspect %> <% end %><% if options[:require] %>, :require => <%= options[:require] %><% end %>
+<% end -%>
+end
+GEMFILE
+
+#  @script = Tempfile.new('pry-try').tap do |f|
+#    File.write(f, <<CODEZ.gsub(/\n+ *(?=\S)/, ';'))
+#require 'bundler/inline'
+#require 'yaml'
+#
+#gemfile(true) do
+#  source 'https://rubygems.org'
+#  gem 'pry'
+#  YAML.load(#{YAML.dump(@gems).inspect}).each {|gargs| gem(*gargs) }
+#end;nil
+#CODEZ
+#  end
 end
 
- exec %{unset BUNDLE_BIN;script=$(cat #{@script ? @script.path : ''} #{$stdin.tty? ? '' : '-'}; echo;echo '$stdin = $stdin.reopen "/dev/tty";'); printf "${script}" | pry}
+# exec %{unset BUNDLE_BIN;script=$(cat #{@script ? @script.path : ''} #{$stdin.tty? ? '' : '-'}; echo;echo '$stdin = $stdin.reopen "/dev/tty";'); printf "${script}" | pry}
