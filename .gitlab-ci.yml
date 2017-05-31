@@ -1,5 +1,4 @@
-spec:
-  image: ruby:2.4
+.spec: &spec
   tags:
     - docker
   script:
@@ -7,3 +6,11 @@ spec:
     - gem build pry-try.gemspec
     - gem install *.gem
     - echo 'puts "Hello AS " + ActiveSupport.version.to_s;exit' | pry-try activesupport
+
+spec2.1:
+  image: ruby:2.1
+  <<: *spec
+
+spec2.4:
+  image: ruby:2.4
+  <<: *spec
