@@ -1,56 +1,6 @@
 #!/usr/bin/env ruby
 
-if ARGV.empty? || %w(-h --help).include?(ARGV.first)
-  puts(<<-EOH)
-    EXAMPLES
-
-    Try scripts:
-
-    $ cat some-script.rb | pry-try
-
-    Try gems:
-
-    $ pry-try redis
-    ... some bundling ...
-    irb(main):001:0> Redis
-    => Redis
-
-    Multiple gems:
-
-    $ pry-try redis rake
-
-    Specific version:
-
-    $ pry-try redis '3.1.0'
-
-    ...or any requirement that would be understood by bundler:
-
-    $ pry-try redis '~> 3.1.0'
-
-    Combined with gems that don't need a specific version:
-
-    $ pry-try redis '~> 3.1.0' rake gem_with_version '1.0'
-
-EOH
-  exit
-elsif %w(-v --version).include?(ARGV.first)
-  require 'pry-try'
-  puts PryTry::VERSION
-  exit
-end
-
 VERSION_LIKE_RE = [Gem::Requirement::PATTERN, /v?\d+\.\d+/, /^\h+$/].freeze
-
-def parse_args(args)
-  args.each_with_object([]) do |arg, obj|
-    matches_arg = arg.method(:match).to_proc
-    if VERSION_LIKE_RE.detect(&matches_arg)
-      obj[-1] << arg
-    else
-      obj << [arg]
-    end
-  end
-end
 
 REQUIREMENTS = {
   'rails' => %w(rails/all active_support/all),
@@ -58,29 +8,92 @@ REQUIREMENTS = {
   'activesupport' => %w(active_support/all),
 }.freeze
 
-@gems = parse_args(ARGV).map do |gem|
-  if r = REQUIREMENTS[gem.first]
-    gem << {:require => r}
-  else
-    gem
+def parse_gems(args)
+  args.each_with_object([]) do |arg, obj|
+    matches_arg = arg.method(:match).to_proc
+    if VERSION_LIKE_RE.detect(&matches_arg)
+      obj[-1] << arg
+    else
+      obj << [arg]
+    end
+  end.map do |gem|
+    if r = REQUIREMENTS[gem.first]
+      gem << {:require => r}
+    else
+      gem
+    end
   end
 end
 
-if @gems.any?
-  require 'tempfile'
-  require 'yaml'
-  @script = Tempfile.new('pry-try').tap do |f|
-    File.write(f, <<CODEZ.gsub(/\n+ *(?=\S)/, ';'))
-require 'bundler/inline'
-require 'yaml'
+def template_for_gems(gems)
+  require 'erb'
+  @gems = gems
+  ERB.new(<<-GEMFILE, 1, "-").result
+begin
+  require "bundler/inline"
+rescue LoadError => e
+  $stderr.puts "Bundler version 1.10 or later is required. Please update your Bundler"
+  raise e
+end
 
 gemfile(true) do
   source 'https://rubygems.org'
   gem 'pry'
-  YAML.load(#{YAML.dump(@gems).inspect}).each {|gargs| gem(*gargs) }
-end;nil
-CODEZ
-  end
+<% @gems.each do |(gem, *opts)|
+    options = opts.last.is_a?(Hash) ? opts.pop : {}
+    version = opts.pop -%>
+  gem <%= gem.inspect %><% if version  %>, <%= version.inspect %> <% end %><% if options[:require] %>, :require => <%= options[:require] %><% end %>
+<% end -%>
+end
+GEMFILE
 end
 
- exec %{unset BUNDLE_BIN;script=$(cat #{@script ? @script.path : ''} #{$stdin.tty? ? '' : '-'}; echo;echo '$stdin = $stdin.reopen "/dev/tty";'); printf "${script}" | pry}
+if ARGV.empty? || %w(-h --help).include?(ARGV.first)
+  puts(<<-EOH)
+Usage:
+  pry-try activesupport
+  cat script.rb | pry-try
+
+Options:
+  -h        Show this help
+  -v        Show version
+  --inline  Print script to STDOUT with inline gemfile as specified
+
+Example:
+  pry-try activesupport
+
+  Start Pry-repl with activesupport required.
+
+  pry-try activesupport '~> 4.2'
+
+  Start Pry-repl with activesupport version 4.x required.
+
+  pry-try activesupport redis
+
+  Start Pry-repl with both activesupport and redis required.
+
+  pry-try --inline activesupport '~> 4.2'
+
+  Print script with inline gemfile.
+EOH
+  exit
+elsif %w(-v --version).include?(ARGV.first)
+  require 'pry-try'
+  puts PryTry::VERSION
+  exit
+elsif %w(--inline).include?(ARGV.first)
+  ARGV.shift
+  puts template_for_gems(parse_gems(ARGV))
+  exit
+end
+
+@gems = parse_gems(ARGV)
+
+if @gems.any?
+  require 'tempfile'
+
+  @script = Tempfile.new('pry-try').tap do |f|
+    File.write(f, template_for_gems(@gems).gsub(/\n+ *(?=\S)/, ';'))
+  end
+  exec %{unset BUNDLE_BIN;script=$(cat #{@script ? @script.path : ''} #{$stdin.tty? ? '' : '-'}; echo;echo '$stdin = $stdin.reopen "/dev/tty";'); printf "${script}" | pry}
+end
