@@ -1,5 +1,12 @@
 #!/usr/bin/env ruby
 
+case ARGV[0]
+when "-v"
+  require 'pry-try'
+  puts PryTry::VERSION
+  exit
+end
+
 VERSION_LIKE_RE = [Gem::Requirement::PATTERN, /v?\d+\.\d+/, /^\h+$/].freeze
 
 def parse_args(args)
