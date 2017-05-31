@@ -99,6 +99,5 @@ if @gems.any?
   @script = Tempfile.new('pry-try').tap do |f|
     File.write(f, template_for_gems(@gems).gsub(/\n+ *(?=\S)/, ';'))
   end
+  exec %{unset BUNDLE_BIN;script=$(cat #{@script ? @script.path : ''} #{$stdin.tty? ? '' : '-'}; echo;echo '$stdin = $stdin.reopen "/dev/tty";'); printf "${script}" | pry}
 end
-
- exec %{unset BUNDLE_BIN;script=$(cat #{@script ? @script.path : ''} #{$stdin.tty? ? '' : '-'}; echo;echo '$stdin = $stdin.reopen "/dev/tty";'); printf "${script}" | pry}
