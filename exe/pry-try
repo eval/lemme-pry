@@ -1,7 +1,39 @@
 #!/usr/bin/env ruby
 
-case ARGV[0]
-when "-v"
+if ARGV.empty? || %w(-h --help).include?(ARGV.first)
+  puts(<<-EOH)
+    EXAMPLES
+
+    Try scripts:
+
+    $ cat some-script.rb | pry-try
+
+    Try gems:
+
+    $ pry-try redis
+    ... some bundling ...
+    irb(main):001:0> Redis
+    => Redis
+
+    Multiple gems:
+
+    $ pry-try redis rake
+
+    Specific version:
+
+    $ pry-try redis '3.1.0'
+
+    ...or any requirement that would be understood by bundler:
+
+    $ pry-try redis '~> 3.1.0'
+
+    Combined with gems that don't need a specific version:
+
+    $ pry-try redis '~> 3.1.0' rake gem_with_version '1.0'
+
+EOH
+  exit
+elsif %w(-v --version).include?(ARGV.first)
   require 'pry-try'
   puts PryTry::VERSION
   exit
