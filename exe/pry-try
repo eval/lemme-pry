@@ -69,7 +69,7 @@ end
 if @gems.any?
   require 'tempfile'
   require 'yaml'
-  @script = Tempfile.new.tap do |f|
+  @script = Tempfile.new('pry-try').tap do |f|
     File.write(f, <<CODEZ.gsub(/\n+ *(?=\S)/, ';'))
 require 'bundler/inline'
 require 'yaml'
