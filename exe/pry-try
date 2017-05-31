@@ -25,17 +25,23 @@ def parse_gems(args)
   end
 end
 
-def template_for_gems(gems)
+def template_for_gems(gems, options = {})
   require 'erb'
   @gems = gems
+  @inline = options[:inline]
   ERB.new(<<-GEMFILE, 1, "-").result
+<% if @inline -%>
+#!/usr/bin/env ruby
+
 begin
   require "bundler/inline"
 rescue LoadError => e
   $stderr.puts "Bundler version 1.10 or later is required. Please update your Bundler"
   raise e
 end
-
+<% else -%>
+require "bundler/inline"
+<% end -%>
 gemfile(true) do
   source 'https://rubygems.org'
   gem 'pry'
@@ -83,7 +89,7 @@ elsif %w(-v --version).include?(ARGV.first)
   exit
 elsif %w(--inline).include?(ARGV.first)
   ARGV.shift
-  puts template_for_gems(parse_gems(ARGV))
+  puts template_for_gems(parse_gems(ARGV), :inline => true)
   exit
 end
 
