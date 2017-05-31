@@ -11,6 +11,10 @@ spec2.1:
   image: ruby:2.1
   <<: *spec
 
+spec2.3:
+  image: ruby:2.3
+  <<: *spec
+
 spec2.4:
   image: ruby:2.4
   <<: *spec
