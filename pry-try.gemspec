@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{Quickly try a gem or script on the repl}
   spec.description   = %q{Start a pry-session with specific gems or a (remote) script loaded.}
-  spec.homepage      = "https://gitlab.com/eval/pry-try/tree/master#pry-try"
+  spec.homepage      = "https://gitlab.com/eval/lemme-pry/tree/master#lemme-pry"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
