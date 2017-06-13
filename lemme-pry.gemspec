@@ -5,7 +5,7 @@ require 'lemme-pry/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "lemme-pry"
-  spec.version       = PryTry::VERSION
+  spec.version       = LemmePry::VERSION
   spec.authors       = ["Gert Goet"]
   spec.email         = ["gert@thinkcreate.nl"]
 
