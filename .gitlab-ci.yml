@@ -2,7 +2,7 @@
   tags:
     - docker
   script:
-    - bundle install --path vendor --without production --jobs $(nproc)
+    - bundle install --path vendor --without production --jobs $(nproc) > /dev/null
     - gem build lemme-pry.gemspec
     - gem install *.gem
     - echo 'puts "Hello AS " + ActiveSupport.version.to_s;exit' | lemme-pry activesupport '~> 4.0'
