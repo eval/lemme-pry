@@ -1,4 +1,4 @@
-# pry-try
+# lemme-pry
 
 Start a pry-session with specific gems or a (remote) script preloaded.
 
@@ -11,10 +11,10 @@ This gem allows you to get a pry-session with either...
 
 ### pry-session with gems pre-loaded
 
-This requires pry-try to be [installed system-wide](#system-wide).
+This requires lemme-pry to be [installed system-wide](#system-wide).
 
 ```bash
-$ pry-try activesupport
+$ lemme-pry activesupport
 Fetching gem metadata from https://rubygems.org/.........
 Fetching version metadata from https://rubygems.org/.
 Resolving dependencies...
@@ -37,7 +37,7 @@ Use a specific version:
 
 ```bash
 # any version notation that is accepted in a Gemfile will work 
-$ pry-try activesupport '~> 4.2'
+$ lemme-pry activesupport '~> 4.2'
 ...
 [2] pry(main)>
 ```
@@ -45,34 +45,34 @@ $ pry-try activesupport '~> 4.2'
 Multiple gems:
     
 ```bash
-$ pry-try activesupport '~> 4.2' redis
+$ lemme-pry activesupport '~> 4.2' redis
 ...
 [2] pry(main)>
 ```
 
 ### pry-session with script preloaded
 
-Anything piped to pry-try will be evaluated before the pry-session starts:
+Anything piped to lemme-pry will be evaluated before the pry-session starts:
 
 ```bash
-$ echo '@a = 1' | pry-try
+$ echo '@a = 1' | lemme-pry
 [1] pry(main)> @a
 => 1
 ```
 
 ```bash
 # handy when sharing code with others:
-$ curl https://gist.githubusercontent.com/eval/76955c57512c1e4ac01cdd913b76c92d/raw/bf714a15789eca3e968c3544f85b9b786b8eae8f/hello.rb | pry-try
+$ curl https://gist.githubusercontent.com/eval/76955c57512c1e4ac01cdd913b76c92d/raw/bf714a15789eca3e968c3544f85b9b786b8eae8f/hello.rb | lemme-pry
 
 # or via the gist command:
-$ gist -r 76955c57512c1e4ac01cdd913b76c92d | pry-try
+$ gist -r 76955c57512c1e4ac01cdd913b76c92d | lemme-pry
 ```
     
-**NOTE:** curl-pipe-runtime is [not without risk](https://www.idontplaydarts.com/2016/04/detecting-curl-pipe-bash-server-side/). A tool like [vipe](https://github.com/madx/moreutils/blob/master/vipe) ([npm variant](https://github.com/juliangruber/vipe#vipe)) allows you to inspect the fetched script before handing it over to pry-try.
+**NOTE:** curl-pipe-runtime is [not without risk](https://www.idontplaydarts.com/2016/04/detecting-curl-pipe-bash-server-side/). A tool like [vipe](https://github.com/madx/moreutils/blob/master/vipe) ([npm variant](https://github.com/juliangruber/vipe#vipe)) allows you to inspect the fetched script before handing it over to lemme-pry.
 
 #### within a (Rails-)project
 
-When the script needs to be evaluated within a project (i.e. use the gems of your project), make sure pry-try is [part of your project](#within-project).
+When the script needs to be evaluated within a project (i.e. use the gems of your project), make sure lemme-pry is [part of your project](#within-project).
 
 A script for a Rails project would typically look like this:
 
@@ -84,7 +84,7 @@ require './config/environment' # load Rails-application
 
 Evaluate via:
 ```
-cat script.rb | bundle exec pry-try
+cat script.rb | bundle exec lemme-pry
 ...
 [1] pry(main)> @user
 #<User id: 1, username: ...
@@ -95,7 +95,7 @@ cat script.rb | bundle exec pry-try
 ### System-wide
 
 ```bash
-$ gem install pry-try
+$ gem install lemme-pry
 ```
 
 ### Within project
@@ -104,7 +104,7 @@ Add the following to `Gemfile`:
     
 ```ruby
 # Gemfile
-gem 'pry-try', group: :development
+gem 'lemme-pry', group: :development
 ```
 
 
@@ -114,7 +114,7 @@ After checking out the repo, run `bin/setup` to install dependencies.
 Then run the tool via:
 
 ```
-$ ruby -Ilib exe/pry-try activesupport
+$ ruby -Ilib exe/lemme-pry activesupport
 ```
 
 ## License

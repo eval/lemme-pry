@@ -3,9 +3,9 @@
     - docker
   script:
     - bundle install --path vendor --without production --jobs $(nproc) > /dev/null
-    - gem build pry-try.gemspec
+    - gem build lemme-pry.gemspec
     - gem install *.gem
-    - echo 'puts "Hello AS " + ActiveSupport.version.to_s;exit' | pry-try activesupport '~> 4.0'
+    - echo 'puts "Hello AS " + ActiveSupport.version.to_s;exit' | lemme-pry activesupport '~> 4.0'
 
 spec2.1:
   image: ruby:2.1
