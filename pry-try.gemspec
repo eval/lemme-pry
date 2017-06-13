@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Gert Goet"]
   spec.email         = ["gert@thinkcreate.nl"]
 
-  spec.summary       = %q{Quickly try a gem or script on the repl}
-  spec.description   = %q{Start a pry-session with specific gems or a (remote) script loaded.}
+  spec.summary       = %q{Renamed. See lemme-pry}
+  spec.description   = %q{Renamed. See lemme-pry.}
   spec.homepage      = "https://gitlab.com/eval/lemme-pry/tree/master#lemme-pry"
   spec.license       = "MIT"
 
