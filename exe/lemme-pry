@@ -1,0 +1,107 @@
+#!/usr/bin/env ruby
+
+VERSION_LIKE_RE = [Gem::Requirement::PATTERN, /v?\d+\.\d+/, /^\h+$/].freeze
+
+REQUIREMENTS = {
+  'rails' => %w(rails/all active_support/all),
+  'activerecord' => %w(active_record),
+  'activesupport' => %w(active_support/all),
+}.freeze
+
+def parse_gems(args)
+  args.each_with_object([]) do |arg, obj|
+    matches_arg = arg.method(:match).to_proc
+    if VERSION_LIKE_RE.detect(&matches_arg)
+      obj[-1] << arg
+    else
+      obj << [arg]
+    end
+  end.map do |gem|
+    if r = REQUIREMENTS[gem.first]
+      gem << {:require => r}
+    else
+      gem
+    end
+  end
+end
+
+def template_for_gems(gems, options = {})
+  require 'erb'
+  @gems = gems
+  @inline = options[:inline]
+  ERB.new(<<-GEMFILE, 1, "-").result
+<% if @inline -%>
+#!/usr/bin/env ruby
+
+begin
+  require "bundler/inline"
+rescue LoadError => e
+  $stderr.puts "Bundler version 1.10 or later is required. Please update your Bundler"
+  raise e
+end
+<% else -%>
+require "bundler/inline"
+<% end -%>
+gemfile(true) do
+  source 'https://rubygems.org'
+  gem 'pry'
+<% @gems.each do |(gem, *opts)|
+    options = opts.last.is_a?(Hash) ? opts.pop : {}
+    version = opts.pop -%>
+  gem <%= gem.inspect %><% if version  %>, <%= version.inspect %> <% end %><% if options[:require] %>, :require => <%= options[:require] %><% end %>
+<% end -%>
+end
+GEMFILE
+end
+
+if ($stdin.tty? && ARGV.empty?) || %w(-h --help).include?(ARGV.first)
+  puts(<<-EOH)
+**NOTE** this gem is continued under the name `lemme-pry`. Please update your dependencies.
+
+Usage:
+  lemme-pry activesupport
+  cat script.rb | lemme-pry
+
+Options:
+  -h        Show this help
+  -v        Show version
+  --inline  Print script to STDOUT with inline gemfile as specified
+
+Example:
+  lemme-pry activesupport
+
+  Start Pry-repl with activesupport required.
+
+  lemme-pry activesupport '~> 4.2'
+
+  Start Pry-repl with activesupport version 4.x required.
+
+  lemme-pry activesupport redis
+
+  Start Pry-repl with both activesupport and redis required.
+
+  lemme-pry --inline activesupport '~> 4.2'
+
+  Print script with inline gemfile.
+EOH
+  exit
+elsif %w(-v --version).include?(ARGV.first)
+  require 'lemme-pry'
+  puts LemmePry::VERSION
+  exit
+elsif %w(--inline).include?(ARGV.first)
+  ARGV.shift
+  puts template_for_gems(parse_gems(ARGV), :inline => true)
+  exit
+end
+
+@gems = parse_gems(ARGV)
+
+if @gems.any?
+  require 'tempfile'
+
+  @script = Tempfile.new('lemme-pry').tap do |f|
+    File.write(f, template_for_gems(@gems).gsub(/\n+ *(?=\S)/, ';'))
+  end
+end
+exec %{unset BUNDLE_BIN;script=$(cat #{@script ? @script.path : ''} #{$stdin.tty? ? '' : '-'}; echo;echo '$stdin = $stdin.reopen "/dev/tty";'); printf "${script}" | pry}
