@@ -1,6 +1,7 @@
 # lemme-pry
 
-Start a pry-session with specific gems or a (remote) script preloaded.
+Start a pry-session with specific gems or a (remote) script preloaded.  
+For the idea behind this gem see [this blogpost](https://www.gertgoet.com/2017/06/12/lemme-pry.html).
 
 ## Usage
 
@@ -14,6 +15,7 @@ This gem allows you to get a pry-session with either...
 This requires lemme-pry to be [installed system-wide](#system-wide).
 
 ```bash
+# to get the latest version of ActiveSupport
 $ lemme-pry activesupport
 Fetching gem metadata from https://rubygems.org/.........
 Fetching version metadata from https://rubygems.org/.
